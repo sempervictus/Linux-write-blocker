@@ -1,23 +1,12 @@
-diff --git a/block/blk-core.c b/block/blk-core.c
-index 1075aaff606dd..a832ad1578959 100644
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -922,6 +922,18 @@ generic_make_request_checks(struct bio *bio)
- 		}
+
+--- linux-master/block/blk-core.c	2019-11-25 08:32:01.000000000 +0800
++++ linux-master-patched/block/blk-core.c	2020-02-23 15:33:54.547036180 +0800
+@@ -799,7 +799,7 @@
+ 			"to read-only block-device %s (partno %d)\n",
+ 			bio_devname(bio, b), part->partno);
+ 		/* Older lvm-tools actually trigger this */
+-		return false;
++		return true;
  	}
  
-+        /*
-+         * Block write, discard, erase, flush, zone reset commands going to a
-+         * read-only device. We do this because kernel drivers often lack
-+         * necessary checks and send these commands to read-only block devices.
-+         */
-+        if (unlikely((bio_op(bio) != REQ_OP_READ)
-+                        && get_disk_ro(bio->bi_disk))) {
-+                pr_warn("unexpected write command to %s blocked\n",
-+                        bio_devname(bio, b));
-+                goto end_io;
-+        }
-+
- 	if (!test_bit(QUEUE_FLAG_POLL, &q->queue_flags))
- 		bio->bi_opf &= ~REQ_HIPRI;
- 
+ 	return false;
